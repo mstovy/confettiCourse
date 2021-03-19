@@ -20,7 +20,7 @@ exports.showIndex = (req, res) => {
 }
 
 exports.showCourses = (req, res) => {
-    res.render("courses", {offeredCourse: courses});
+    res.render("courses", {offeredCourses: courses});
 }
 
 exports.showSignUp = (req, res) => {
