@@ -15,18 +15,8 @@ var courses = [
     },
 ]
 
-exports.showIndex = (req, res) => {
-    res.render("index");
-}
-
-exports.showCourses = (req, res) => {
-    res.render("courses", {offeredCourses: courses});
-}
-
-exports.showSignUp = (req, res) => {
-    res.render("contact");
-}
-
-exports.postedSignUpForm = (req, res) => {
-    res.render("thanks");
+module.exports = {
+    index: (req, res) => {
+        res.render("index");
+    }
 }
