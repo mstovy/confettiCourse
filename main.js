@@ -20,7 +20,7 @@ app.use(
 );
 router.use(express.json());
 router.use(layouts);
-router.used(express.static("public"));
+router.use(express.static("public"));
 router.use(methodOverride("_method", {methods: ["POST", "GET"]}));
 
 // routing for website

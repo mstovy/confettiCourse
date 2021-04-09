@@ -1,6 +1,7 @@
 const mongoose = require("mongoose"),
 { Schema } = require("mongoose"),
-Subscriber = require("./subscriber")
+Subscriber = require("./subscriber"),
+Course = require("./course")
 userSchema = new Schema(
     {
         name: {
@@ -28,13 +29,12 @@ userSchema = new Schema(
             required: true
         },
         courses: [{type: Schema.Types.ObjectId, ref: Course}],
-        subscribedAccount: {type: Schema.Types.ObjectId, ref: Subscriber}
+        subscribedAccount: [{type: Schema.Types.ObjectId, ref: Subscriber}]
     },
     {
         timestamps: true
     }
 )
-
 userSchema.virtual("fullName").get(function () {
     return `${this.name.first} ${this.name.last}`;
 });
@@ -59,4 +59,4 @@ userSchema.pre("save", function(next) {
     }
 })
 
-module.exports = mongoose.Model("User", userSchema);
+module.exports = mongoose.model("User", userSchema);

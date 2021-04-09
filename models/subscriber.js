@@ -1,4 +1,7 @@
-const mongoose = require("mongoose"), subscriberSchema = mongoose.Schema({
+const mongoose = require("mongoose"),
+    { Schema } = require("mongoose"),
+    Course = require("./course")
+subscriberSchema = new Schema({
     name: {
         type: String,
         required: true
@@ -14,8 +17,10 @@ const mongoose = require("mongoose"), subscriberSchema = mongoose.Schema({
         min: [10000, "Zip Code too short"],
         max: 99999
     },
-    courses: [{ type: mongoose.Schema.Types.ObjectId, ref: Course }],
-    timestamps: true
+    courses: [{ type: Schema.Types.ObjectId, ref: Course }],
+},
+    {
+        timestamps: true
 });
 
 subscriberSchema.methods.getInfo = function () {
@@ -26,4 +31,3 @@ subscriberSchema.methods.findLocalSubscribers = function () {
         .find({ zipCode: this.zipCode })
         .exec();
 }
-// module.exports = mongoose.model("Subscriber", subscriberSchema);
