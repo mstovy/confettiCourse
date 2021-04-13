@@ -1,8 +1,25 @@
 "use strict";
 
-const Users = require("../models/user");
+const passport = require("passport");
+const user = require("../models/user");
+
+const Users = require("../models/user"),
+    getUserParams = body => {
+        return {
+            name: {
+                first: body.first,
+                last: body.last
+            },
+            email: body.email,
+            password: body.password,
+            zipCode: body.zipCode
+        };
+    };
 
 module.exports = {
+    login: (req, res) => {
+        res.render("users/login");
+    },
     index: (req, res, next) => {
         Users.find()
             .then(Userss => {
@@ -22,25 +39,54 @@ module.exports = {
         res.render("/users/new");
     },
     create: (req, res, next) => {
-        let newUsers = new Users({
-            name: {
-                first: req.body.first,
-                last: req.body.last
-            },
-            email: req.body.email,
-            password: req.body.password,
-            zipCode: req.body.zipCode
-        });
-        user.create(newUsers)
-            .then(user => {
-                res.locals.user = user;
+        if(req.skip) return next();
+        let userParams = getUserParams(req.body);
+        let newUser = new Users(userParams);
+        user.register(newUser, req.body.password, (error, user) => {
+            if(user) {
+                req.flash("success", "User account successfully create!");
                 res.locals.redirect = "/users";
+            }
+            else {
+                req.flash("error", `User creation failed: ${error.message}`);
+                res.locals.redirect = "/users/new";
                 next();
-            })
-            .catch(error => {
-                console.log(`Error saving user: ${error.message}`);
-                next(error)
-            })
+            }
+        });
+    },
+    validate: (req, res, next) => {
+        req.sanitizeBody("email").normalizeEmail({
+            all_lowercase: true
+        }).trim();
+
+        req.check("email", "Email is not valid!").isEmail();
+        req.checl("zipCode", "Zip Code is not valid!").notEmpty().isInt().isLength({
+            min: 5,
+            max: 5
+        });
+        req.check("password", "Password can not be empty!").notEmpty();
+        req.getValidationResult().then((error) => {
+            if(!error.isEmpty()) {
+                let messages = error.array().map (e => e.msg);
+                req.flash("error", messages.join(" and "));
+                req.skip = true;
+                res.locals.redirect = "/users/new";
+                next();
+            }
+            else next();
+        });
+    },
+    authenticate: passport.authenticate("local", {
+        failureRedirect: "/users/login",
+        failureFlash: "Login Failed! Check your email or password!",
+        successRedirect: "/",
+        successFlash: "Logged In!"
+    }),
+    logout: (req, res, next) => {
+        req.logout();
+        req.flash("success", "Successfully logged out");
+        req.locals.redirect = "/";
+        next();
     },
     redirectView: (req, res, next) => {
         let redirectPath = res.locals.redirect;
@@ -73,16 +119,10 @@ module.exports = {
             })
     },
     update: (req, res, next) => {
-        let userId = req.params.id;
-        let updatedUsers = new Users({
-            name: {
-                first: req.body.first,
-                last: req.body.last
-            },
-            email: req.body.email,
-            password: req.body.password,
-            zipCode: req.body.zipCode
-        })
+        if (req.skip) return next();
+        let userID = req.params.id,
+        userParams = getUserParams(req.body);
+        
         Users.findByIdAndUpdate(userId, updatedUsers)
             .then(user => {
                 res.locals.user = user;
