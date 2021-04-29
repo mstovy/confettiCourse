@@ -16,7 +16,11 @@ module.exports = {
 
   },
   indexView: (req, res) => {
+    if (req.quer.fromat === "json") {
+      res.json(res.locals.courses);
+    } else {
     res.render("/courses/index");
+    }
   },
   new: (req, res) => {
     res.render("/courses/new");
@@ -97,5 +101,26 @@ module.exports = {
     .catch(error => {
       console.log(`Error fetching Course by ID: ${error.message}`);
     })
+  },
+  respondJSON: (req, res) => {
+    res.json({
+      status: httpStatus.OK,
+      data: res.locals
+    });
+  },
+  errorJSON: (error, req, res, next) => {
+    let errorObject;
+    if (error) {
+      errorObject = {
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        message: errormessage
+      };
+    } else {
+      errorObject = {
+        status: httpStatus.INTERNAL_SERVER_ERROR,
+        message: "Unknown Error."
+      };
+    }
+    res.json(errorObject);
   }
 }
