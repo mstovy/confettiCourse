@@ -1,6 +1,3 @@
-"use strict";
-
-const { get } = require("mongoose");
 const usersController = require("../controllers/usersController");
 
 const router = require("express").Router(), userController = require("../controllers/usersController");

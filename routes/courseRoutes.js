@@ -1,7 +1,3 @@
-"use strict";
-
-const { get } = require("mongoose");
-const coursesController = require("../controllers/coursesController");
 
 const router = require("express").Router(), coursesController = require("../controllers/coursesController");
 
@@ -13,3 +9,5 @@ router.get("/:id",coursesController.show,coursesController.showView);
 router.get("/:id/edit",coursesController.edit);
 router.put("/:id/update",coursesController.update,coursesController.redirectView);
 router.delete("/:id/delete",coursesController.delete,coursesController.redirectView);
+
+module.exports = router;

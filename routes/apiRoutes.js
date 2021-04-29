@@ -1,10 +1,11 @@
-"use strict";
-
 const router = require("express").Router(),
-courseController = require("../controllers/courseController");
+coursesController = require("../controllers/courseController"),
+usersController = require("../controllers/usersController");
 
-router.get("/courses/:id/join", courseController.join, courseController.redirect);
-router.get("/courses", courseController.index, courseController.fileterUserCourses, courseController.resondJSON);
-router.use(courseController.errorJSON);
+router.post("/login", usersController.apiAuthenticate);
+router.use(usersController.verifyJWT);
+router.get("/courses/:id/join", coursesController.join, coursesController.respondJSON);
+router.get("/courses", coursesController.index, coursesController.filterUserCourses, coursesController.respondJSON);
+router.use(coursesController.errorJSON);
 
 module.exports = router;
